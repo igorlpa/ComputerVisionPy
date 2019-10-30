@@ -26,7 +26,10 @@ if(capture.isOpened()):
         # print(frame.shape) #altura, largura, canais
         im_height = frame.shape[0]
         im_width = frame.shape[1]
-        
+
+        mask = np.zeros((frame.shape[0], frame.shape[1]))
+        #mask = np.zeros(frame.shape)
+
         # detecção das faces
         # converte em blob
         #cv.resize(frame, (300, 300))
@@ -43,12 +46,25 @@ if(capture.isOpened()):
                 y1 = int(detections[0, 0, i, 4] * im_height)
                 x2 = int(detections[0, 0, i, 5] * im_width)
                 y2 = int(detections[0, 0, i, 6] * im_height)
-                
-                # sub_face = frame[x1:x2, y1:y2]
-                frame[y1:y2, x1:x2] = cv.blur(frame[y1:y2, x1:x2], (25,25))
-                frame[y1:y2, x1:x2] = frame[y1:y2, x1:x2] - 10
-                cv.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)
-        
+
+                # dimensões da face
+                face_width = x2-x1
+                face_height = y2-y1
+
+                # localizando o retangulo da imagem
+                #frame[y1:y2, x1:x2] = cv.blur(frame[y1:y2, x1:x2], (25,25))
+                #frame[y1:y2, x1:x2] = frame[y1:y2, x1:x2] - 10
+                #cv.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)
+
+
+
+                # area circular
+                blured_image = cv.blur(frame, (35,35))
+                cv.ellipse(mask, (int((x1+x2)/2), int((y1+y2)/2)), (int(1.3* face_width/2), int(1.2*face_height/2)), 0, 0, 360, (255), -1)
+                frame[np.where(mask == 255)] = blured_image[np.where(mask == 255)]
+                #cv.ellipse(frame, (int((x1+x2)/2), int((y1+y2)/2)), (int(1.3* face_width/2), int(1.2*face_height/2)), 0, 0, 360, (255,0,0), 2)
+
+
         # exibe a imagem processada
         cv.imshow("Identity", frame)
        

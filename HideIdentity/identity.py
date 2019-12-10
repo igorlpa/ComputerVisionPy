@@ -7,7 +7,7 @@
 import cv2 as cv
 import numpy as np
  
-capture = cv.VideoCapture(0)
+capture = cv.VideoCapture(1)
 
 # arquivos necessarios para a deteccao de faces
 modelFile = "opencv_face_detector_uint8.pb"
@@ -15,10 +15,18 @@ configFile = "opencv_face_detector.pbtxt"
 # carregamento da rede
 net = cv.dnn.readNetFromTensorflow(modelFile, configFile)
 
+
+
+
 # confiança minima para a deteccao da face
-conf_threshold = 0.7
+conf_threshold = 0.5
 # se deu certo abrir a camera
 if(capture.isOpened()):
+    ret, frame = capture.read()
+
+    fourcc = cv.VideoWriter_fourcc(*'XVID')
+    writer = cv.VideoWriter('hiddenIdentity.avi', fourcc, 20, ( frame.shape[1], frame.shape[0]))
+
     while(1):
         # pega frame atual
         ret, frame = capture.read()
@@ -56,18 +64,16 @@ if(capture.isOpened()):
                 #frame[y1:y2, x1:x2] = frame[y1:y2, x1:x2] - 10
                 #cv.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)
 
-
-
-                # area circular
+                # area eliptica ao redor da face
                 blured_image = cv.blur(frame, (35,35))
                 cv.ellipse(mask, (int((x1+x2)/2), int((y1+y2)/2)), (int(1.3* face_width/2), int(1.2*face_height/2)), 0, 0, 360, (255), -1)
                 frame[np.where(mask == 255)] = blured_image[np.where(mask == 255)]
                 #cv.ellipse(frame, (int((x1+x2)/2), int((y1+y2)/2)), (int(1.3* face_width/2), int(1.2*face_height/2)), 0, 0, 360, (255,0,0), 2)
 
-
         # exibe a imagem processada
         cv.imshow("Identity", frame)
-       
+        writer.write(frame)
+
         # interrompe o processo saindo do while
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
@@ -76,4 +82,5 @@ else:
  
 # libera as extruturas e fecha as janelas
 capture.release()
+writer.release()
 cv.destroyAllWindows()

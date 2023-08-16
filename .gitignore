@@ -105,3 +105,4 @@ venv.bak/
 HideIdentity/hiddenIdentity.avi
 DL notebooks/archive.zip
 DL notebooks/fruits-dataset/
+Pytorch/MNIST_data/

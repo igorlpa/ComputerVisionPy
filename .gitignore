@@ -106,3 +106,5 @@ HideIdentity/hiddenIdentity.avi
 DL notebooks/archive.zip
 DL notebooks/fruits-dataset/
 Pytorch/MNIST_data/
+Pytorch/data/
+Pytorch/model_cifar.pt
